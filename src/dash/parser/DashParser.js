@@ -70,18 +70,24 @@ function DashParser(/*config*/) {
 
         try {
             const startTime = window.performance.now();
+            let ironedTime = 0;
+            let jsonTime = 0;
 
-            manifest = converter.xml_str2json(data);
+            if (data.trimLeft().startsWith('<?')) {
+                manifest = converter.xml_str2json(data);
 
-            if (!manifest) {
-                throw new Error('parser error');
+                if (!manifest) {
+                    throw new Error('parser error');
+                }
+
+                jsonTime = window.performance.now();
+
+                objectIron.run(manifest);
+                ironedTime = window.performance.now();
+            } else {
+                manifest = JSON.parse(data);
+                jsonTime = window.performance.now();
             }
-
-            const jsonTime = window.performance.now();
-
-            objectIron.run(manifest);
-
-            const ironedTime = window.performance.now();
 
             xlinkController.setMatchers(matchers);
             xlinkController.setIron(objectIron);

@@ -249,11 +249,12 @@ function DashManifestModel() {
 
     function getCodec(adaptation) {
         var representation = adaptation.Representation_asArray[0];
-        return (representation.mimeType + ';codecs="' + representation.codecs + '"');
+        var mimeType = adaptation.mimeType || representation.mimeType;
+        return mimeType + ';codecs="' + representation.codecs + '"';
     }
 
     function getMimeType(adaptation) {
-        return adaptation.Representation_asArray[0].mimeType;
+        return adaptation.mimeType || adaptation.Representation_asArray[0].mimeType;
     }
 
     function getKID(adaptation) {
@@ -376,6 +377,7 @@ function DashManifestModel() {
             representation = new Representation();
             representation.index = i;
             representation.adaptation = adaptation;
+            representation.mimeType = representation.mimeType || a.mimeType;
 
             if (r.hasOwnProperty('id')) {
                 representation.id = r.id;
@@ -405,7 +407,11 @@ function DashManifestModel() {
                     representation.useCalculatedLiveEdgeTime = true;
                 }
             }
-            else if (r.hasOwnProperty('SegmentTemplate')) {
+            else if (r.hasOwnProperty('SegmentTemplate') || a.SegmentTemplate) {
+                if (!r.SegmentTemplate) {
+                    r.SegmentTemplate = a.SegmentTemplate;
+                }
+
                 segmentInfo = r.SegmentTemplate;
 
                 if (segmentInfo.hasOwnProperty('SegmentTimeline')) {
