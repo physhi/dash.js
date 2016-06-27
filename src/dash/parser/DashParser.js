@@ -73,7 +73,7 @@ function DashParser(/*config*/) {
             let ironedTime = 0;
             let jsonTime = 0;
 
-            if (data.trimLeft().startsWith('<?')) {
+            if (data.substr(0, 100).indexOf('<?') >= 0) {
                 manifest = converter.xml_str2json(data);
 
                 if (!manifest) {
